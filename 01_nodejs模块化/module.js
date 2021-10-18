@@ -8,19 +8,19 @@
  *
  */
 
-exports.x = 10;
-exports.y = 20;
+// exports.x = 10;
+// exports.y = 20;
 
 /**
  * 4、node 中有一个全局变量 global，类似于网页中的 window 对象
  *    - 在全局中创建的变量或函数都会作为 global 的属性或方法
  */
 
-a = 10; // 没有用 var 定义，会提升到最外层，也就是全局
-b = function(){};
+// a = 10; // 没有用 var 定义，会提升到最外层，也就是全局
+// b = function(){};
 
-console.log(global.a);
-console.log(global.b);
+// console.log(global.a);
+// console.log(global.b);
 
 /**
  * 5、怎么证明代码是运行在函数里面的？
@@ -33,7 +33,7 @@ console.log(global.b);
  *            - 函数，用来引入外部的模块
  *          - module：
  *            - 代表是当前的模块本身，exports 就是 module 的属性
- *              - 想要改变 exports 的值，需要写 module.exports = 10; 直接写 exports = 10; 无效，require 的返回值还是空对象 {}
+ *              - 想要改变 exports 的值，需要写 module.exports = 10; 直接写 exports = 10; 无效，require 的返回值还是空对象 {}，这是由于参数引用的问题（js 基础）
  *          - __filename：
  *            - 当前模块的完整路径
  *          - __dirname：
@@ -41,7 +41,17 @@ console.log(global.b);
  *
  */
 
-console.log(arguments.callee + ''); // 模块的实际样子
-console.log(exports === module.exports); // true
-console.log(__filename); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化\module.js
-console.log(__dirname); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化
+// console.log(arguments.callee + ''); // 模块的实际样子
+// console.log(exports === module.exports); // true
+// console.log(__filename); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化\module.js
+// console.log(__dirname); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化
+
+/**
+ * 6、exports 和 module.exports，exports 是函数的参数，是一个变量，默认赋值为 module.exports，require 只接收 module.exports 的值，所以：
+ *    - 使用 exports，只能往上面添加属性，exports.x，就相当于 module.exports.x，module.exports 默认为一个空对象 {}
+ *    - 改变 exports 的值（exports = x），require 是接收不到的，需要使用 module.exports = x，此时 module.exports 的值由默认的空对象 {} 变成 x
+ *    - 一般都使用 module.exports
+ */
+
+// exports = 10; // 变量 exports 被重新赋值了，require 的返回值还是 {}
+// module.exports = 10; // require 的返回值是 10，就是 module.exports 的值

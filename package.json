@@ -1,0 +1,22 @@
+{
+  "name": "nodejs-s",
+  "version": "1.0.0",
+  "description": "",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lxk1080/nodejs-s.git"
+  },
+  "author": "lxk",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lxk1080/nodejs-s/issues"
+  },
+  "homepage": "https://github.com/lxk1080/nodejs-s#readme",
+  "dependencies": {
+    "math": "0.0.3"
+  }
+}

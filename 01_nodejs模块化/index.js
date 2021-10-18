@@ -12,6 +12,19 @@
  *
  */
 
-const num = require('./module');
+// const num = require('./module');
 
-console.log(num);
+// console.log(num);
+
+/**
+ * 4、node 在使用模块名字来引用模块时，它会首先在当前目录的 node_modules 中寻找是否有该模块，
+ *    如果有则直接使用，如果没有，则去上一级目录的 node_modules 中寻找，
+ *    如果有则直接使用，如果没有，则再去上一级目录寻找，逐级向上，一直到磁盘的根目录（类似于 js 的作用域），
+ *    如果在磁盘的根目录依然没有，则会去全局模块中去找，
+ *    如果还没有的话，则报错
+ *
+ */
+
+// const math = require('math');
+
+// console.log(math.add(1, 2));
