@@ -19,6 +19,7 @@
   "homepage": "https://github.com/lxk1080/nodejs-s#readme",
   "dependencies": {
     "express": "^4.17.1",
+    "express-formidable": "^1.2.0",
     "math": "0.0.3"
   },
   "devDependencies": {
