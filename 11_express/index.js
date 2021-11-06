@@ -9,7 +9,7 @@ const path = require('path');
 const formidable = require('express-formidable');
 
 /**
- * 2、创建服务
+ * 2、创建 express 应用程序
  *
  */
 
@@ -19,7 +19,7 @@ const app = express();
  * 3、指定静态资源根目录
  *
  *    - 第一个参数：为静态资源创建路径前缀，默认为 / ，可以省略
- *      - 访问方式：localhost:3000/api/01.jpg
+ *      - 例如当参数为'/api' 时，访问方式为：localhost:3000/api/01.jpg
  *
  *    - 可以指定多个静态资源目录
  *
@@ -43,7 +43,7 @@ app.use(express.static(path.join(__dirname, './static')));
  */
 
 // app.use(express.json()); // for application/json
-// app.use(express.urlencoded({ extended: true })); // for application/x-www-form-urlencoded
+// app.use(express.urlencoded({ extended: false })); // for application/x-www-form-urlencoded
 app.use(formidable()); // for all
 
 app.get('/', function (req, res) {

@@ -4,12 +4,14 @@ const fs = require('fs');
 /**
  * 1、简单文件读取（小文件）
  *    - fs.readFile(path[, options], callback)
+ *      - 第二个参数 options 是可选的，它可以是一个对象也可以是一个字符串指定编码，设置编码为 utf-8 ，则不需要使用 data.toString() 也能得到中文字符串
  *
  */
 
-// fs.readFile('./data/haha.txt', function (err, data) {
+// fs.readFile('./data/haha.txt', 'utf-8', function (err, data) {
 //   if (!err) {
-//     console.log(data.toString());
+//     // console.log(data.toString());
+//     console.log(data);
 //   }
 // });
 
