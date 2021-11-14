@@ -22,7 +22,9 @@
     "express": "^4.17.1",
     "express-art-template": "^1.0.1",
     "express-formidable": "^1.2.0",
-    "math": "0.0.3"
+    "math": "0.0.3",
+    "mongoose": "^6.0.12",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.14"
