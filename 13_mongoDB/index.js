@@ -62,6 +62,9 @@ mongoose.connect('mongodb://localhost/nodeTest');
  *        - users -> users
  *        - userss -> userses
  *
+ *    - 注意下面的 Date.now，获取当前时间的方法，每次创建新数据的时候执行该方法，
+ *      不能写 Date.now()，否则在创建 model 的时候就会立刻执行，就成为一个定值了
+ *
  */
 
 const models = {
