@@ -14,6 +14,7 @@ const app = express();
  *
  *    - app.set(key, value) 方法用于设置键值对，可以存储任何自定义的值，并用 app.get(key) 获取值
  *      - 某些 key 可用于配置服务器的行为，例如下面的 views，它指定了模板文件的所在文件夹，默认为 process.cwd() + '/views'
+ *      - 注意 process.cwd() 是执行 node 命令的终端路径哦，不是当前文件所在的文件夹
  *
  */
 
