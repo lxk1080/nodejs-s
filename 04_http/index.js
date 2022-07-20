@@ -20,6 +20,7 @@ const server = http.createServer();
  *
  *    - req：关于请求的所有信息
  *      - url：返回 url，url 是不包含域名的，url 总是以 / 开头的
+ *      - method：请求类型，GET / POST，注意是大写
  *      - socket.remoteAddress：客户端 ip，是内网 ip
  *      - socket.remotePort：客户端的访问端口
  *
@@ -50,6 +51,7 @@ server.on('request', function (req, res) {
   }
 
   console.log('url:', req.url);
+  console.log('method:', req.method);
   console.log(req.socket.remoteAddress);
   console.log(req.socket.remotePort);
 
@@ -59,34 +61,34 @@ server.on('request', function (req, res) {
 
   // 特殊的请求-1
   if (req.url === '/') {
-    fs.readFile('./resource/index.html', function (err, data) {
-      if (!err) {
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        res.end(data);
-      }
+    const filePath = path.resolve(__dirname, './resource/index.html');
+    fs.readFile(filePath, function (err, data) {
+      if (err) return console.log(err);
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.end(data);
     });
     return;
   }
 
   // 特殊的请求-2
   if (req.url === '/girl') {
-    fs.readFile('./resource/girl.jpg', function (err, data) {
-      if (!err) {
-        res.setHeader('Content-Type', 'image/jpeg;');
-        res.end(data);
-      }
+    const filePath = path.resolve(__dirname, './resource/girl.jpg');
+    fs.readFile(filePath, function (err, data) {
+      if (err) return console.log(err);
+      res.setHeader('Content-Type', 'image/jpeg;');
+      res.end(data);
     });
     return;
   }
 
   // 寻找静态资源
-  fs.readFile(www + req.url, function (err, data) {
+  const filePath = path.resolve(__dirname, www + req.url);
+  fs.readFile(filePath, function (err, data) {
     // 未找到资源
     if (err) {
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
       return res.end('啥也没有！');
     }
-
     // 找到了资源
     res.setHeader('Content-Type', `${suffixMap[path.extname(req.url)]} charset=utf-8`);
     res.end(data);
