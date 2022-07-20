@@ -52,15 +52,36 @@ server.on('request', function (req, res) {
 
   console.log('url:', req.url);
   console.log('method:', req.method);
-  console.log(req.socket.remoteAddress);
-  console.log(req.socket.remotePort);
+  console.log('remoteAddress:', req.socket.remoteAddress);
+  console.log('remotePort:', req.socket.remotePort);
 
   // res.write('hello');
   // res.write(' world');
   // res.end();
 
+  // 去掉参数，对应浏览器端的 location.pathname
+  const pathname = req.url.split('?')[0];
+
+  // GET 请求
+  if (req.method === 'GET') {
+    console.log('GET Received');
+    console.log('GET Query:', req.url.split('?')[1]);
+  }
+
+  // POST 请求处理，可以使用 postman 模拟
+  if (req.method === 'POST') {
+    console.log('POST Received');
+    let data = '';
+    req.on('data', stream => {
+      data += stream;
+    });
+    req.on('end', () => {
+      console.log('POST Body:', data);
+    });
+  }
+
   // 特殊的请求-1
-  if (req.url === '/') {
+  if (pathname === '/home') {
     const filePath = path.resolve(__dirname, './resource/index.html');
     fs.readFile(filePath, function (err, data) {
       if (err) return console.log(err);
@@ -71,7 +92,7 @@ server.on('request', function (req, res) {
   }
 
   // 特殊的请求-2
-  if (req.url === '/girl') {
+  if (pathname === '/girl') {
     const filePath = path.resolve(__dirname, './resource/girl.jpg');
     fs.readFile(filePath, function (err, data) {
       if (err) return console.log(err);
@@ -82,7 +103,7 @@ server.on('request', function (req, res) {
   }
 
   // 寻找静态资源
-  const filePath = path.resolve(__dirname, www + req.url);
+  const filePath = path.resolve(__dirname, www + pathname);
   fs.readFile(filePath, function (err, data) {
     // 未找到资源
     if (err) {
@@ -90,7 +111,7 @@ server.on('request', function (req, res) {
       return res.end('啥也没有！');
     }
     // 找到了资源
-    res.setHeader('Content-Type', `${suffixMap[path.extname(req.url)]} charset=utf-8`);
+    res.setHeader('Content-Type', `${suffixMap[path.extname(pathname)]} charset=utf-8`);
     res.end(data);
   });
 });
