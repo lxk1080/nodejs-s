@@ -39,15 +39,16 @@ const qs = require('querystring')
 
 /**
  * 2、使用 post 请求
- *    - 注意：headers 里面的 Content-Length 属性，是个 Number，要不就不传，要不一定要传对（传过去估计性能会好点，不需要服务器自己判断传递数据的大小）
- *      - 传对了：服务端刚好拿到传过去的完整的数据
- *      - 传短了：服务端拿到不完整的数据
- *      - 传长了：服务器会卡住无响应，因为传过去的数据不够长，服务器会一直等待客户端传过去
+ *    - 注意：headers 里面的 Content-Length 属性，是个 Number，指的是字节（Byte）的长度
+ *      - 这个参数，要不就不传，要不一定要传对（传过去估计性能会好点，不需要服务器自己判断传递数据的大小）
+ *        - 传对了：服务端刚好拿到传过去的完整的数据
+ *        - 传短了：服务端拿到不完整的数据
+ *        - 传长了：服务器会卡住无响应，因为传过去的数据不够长，服务器会一直等待客户端传过去
  *
  */
 
 const originData = {
-  user: 'dioop',
+  user: 'dioop-桌牌',
   age: 25,
 }
 
@@ -68,7 +69,7 @@ const req = http.request({
     Cookie: 'sessionId=123',
     // 'Content-Type': 'application/x-www-form-urlencoded',
     'Content-Type': 'application/json',
-    'Content-Length': data.length,
+    'Content-Length': Buffer.byteLength(data), // 注意是字节长度，不是字符串长度
   },
 }, (res) => {
   let dataStr = ''

@@ -1,11 +1,5 @@
-let count = 0
+const { sleepTime } = require('./jsIQ/common')
 
-function sleepTime(time) {
-  const sleep = Date.now() + time
-  while (Date.now() < sleep) { count++ }
-}
-
-sleepTime(16)
-
-// 一帧的时间的执行次数
+// 一帧的时间的循环次数
+const count = sleepTime(16)
 console.log(count)

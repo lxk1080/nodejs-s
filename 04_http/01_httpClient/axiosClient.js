@@ -38,6 +38,7 @@ const axios = require('axios').default
 const data = {
   a: 1,
   b: 2,
+  c: 'droop-桌牌',
 }
 
 axios.post('http://127.0.0.1:3000/home', data, {

@@ -3,6 +3,8 @@
  * 说明：process 相关的属性与方法。process 是全局变量，不需要引入
  */
 
+const { sleepTime } = require('../jsIQ/common')
+
 /**
  * 1、资源：CPU、内存
  *
@@ -45,6 +47,14 @@
  *
  */
 
-console.log(process.argv) // 启动参数
-console.log(process.argv0) // 快速拿到数组的第一个值（node启动程序路径），注意不能使用 argv1、argv2、...
-console.log(process.execArgv) // 命令行选项的数组
+// console.log(process.argv) // 启动参数
+// console.log(process.argv0) // 快速拿到数组的第一个值（node启动程序路径），注意不能使用 argv1、argv2、...
+// console.log(process.execArgv) // 命令行选项的数组
+// console.log(process.pid) // 进程 PID
+// console.log(process.ppid) // 当前进程的父进程的 PID
+// sleepTime(2000) // 睡两秒
+// console.log(process.uptime()) // 当前 Node.js 进程已运行的秒数
+
+/**
+ * 4、事件
+ */
