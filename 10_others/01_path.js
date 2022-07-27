@@ -6,6 +6,7 @@
 
 const path = require('path');
 
+// 定义一个路径形式的公用字符串
 const pathString = 'D:/a/b/c/index.js';
 
 /**
