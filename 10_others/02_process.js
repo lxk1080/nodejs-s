@@ -3,6 +3,7 @@
  * 说明：process 相关的属性与方法。process 是全局变量，不需要引入
  */
 
+const fs = require('fs')
 const { sleepTime } = require('../jsIQ/common')
 
 /**
@@ -57,4 +58,33 @@ const { sleepTime } = require('../jsIQ/common')
 
 /**
  * 4、事件
+ *    - 监听进程结束
+ *      - beforeExit 回调可以写异步代码，但是会一直循环触发 beforeExit 事件
+ *      - exit 回调不可以写异步代码，写了也不会执行
+ *      - 可以使用 process.exit() 强制退出当前进程（后面的代码都不会执行了），并且不会触发 beforeExit 事件
  */
+
+// process.on('beforeExit', code => console.log('beforeExit code ==>', code))
+// process.on('exit', code => console.log('exit code ==>', code))
+// process.exit()
+// console.log('执行结束了')
+
+/**
+ * 5、标准输入流、输出流、错误
+ */
+
+// 1、输入输出流之间的传递
+// process.stdout.write('输入点什么：')
+// process.stdin.pipe(process.stdout)
+
+// 2、文件流传递
+// fs.createReadStream('../03_文件系统/data/haha.txt').pipe(process.stdout)
+
+// 3、监听写操作
+process.stdout.write('写点什么：')
+process.stdin.on('readable', () => {
+  const chunk = process.stdin.read()
+  if (chunk !== null) {
+    process.stdout.write(`chunk ==> ${chunk}`)
+  }
+})
