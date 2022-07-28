@@ -1,9 +1,9 @@
-
 /**
  * 说明：process 相关的属性与方法。process 是全局变量，不需要引入
  */
 
 const fs = require('fs')
+const path = require('path')
 const { sleepTime } = require('../jsIQ/common')
 
 /**
@@ -78,7 +78,8 @@ const { sleepTime } = require('../jsIQ/common')
 // process.stdin.pipe(process.stdout)
 
 // 2、文件流传递
-// fs.createReadStream('../03_文件系统/data/haha.txt').pipe(process.stdout)
+// const filePath = path.resolve(__dirname, '../03_文件系统/data/haha.txt')
+// fs.createReadStream(filePath).pipe(process.stdout)
 
 // 3、监听写操作
 process.stdout.write('写点什么：')
