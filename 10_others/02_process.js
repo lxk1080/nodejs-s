@@ -1,7 +1,9 @@
+
 /**
  * 说明：process 相关的属性与方法。process 是全局变量，不需要引入
  */
 
+const events = require('events')
 const fs = require('fs')
 const path = require('path')
 const { sleepTime } = require('../jsIQ/common')
@@ -62,6 +64,7 @@ const { sleepTime } = require('../jsIQ/common')
  *      - beforeExit 回调可以写异步代码，但是会一直循环触发 beforeExit 事件
  *      - exit 回调不可以写异步代码，写了也不会执行
  *      - 可以使用 process.exit() 强制退出当前进程（后面的代码都不会执行了），并且不会触发 beforeExit 事件
+ *
  */
 
 // process.on('beforeExit', code => console.log('beforeExit code ==>', code))
@@ -70,7 +73,7 @@ const { sleepTime } = require('../jsIQ/common')
 // console.log('执行结束了')
 
 /**
- * 5、标准输入流、输出流、错误
+ * 5、标准输入流、输出流
  */
 
 // 1、输入输出流之间的传递
@@ -81,11 +84,60 @@ const { sleepTime } = require('../jsIQ/common')
 // const filePath = path.resolve(__dirname, '../03_文件系统/data/haha.txt')
 // fs.createReadStream(filePath).pipe(process.stdout)
 
-// 3、监听写操作
-process.stdout.write('写点什么：')
-process.stdin.on('readable', () => {
-  const chunk = process.stdin.read()
-  if (chunk !== null) {
-    process.stdout.write(`chunk ==> ${chunk}`)
-  }
+// 3、监听可读，只触发一次
+// process.stdout.write('写点什么：')
+// process.stdin.on('readable', () => {
+//   const chunk = process.stdin.read()
+//   if (chunk !== null) {
+//     process.stdout.write(`chunk ==> ${chunk}`)
+//   }
+// })
+
+/**
+ * 6、模拟命令行工具
+ *    - process.stdin.on('data') 开启输入流的监听，不暂停或退出进程，就会一直监听着
+ *    - process.stdin.pause() 暂停输入流录入，可以用 resume() 恢复
+ *    - 使用自定义事件通知信息录入完成，并传递数据，做下一步的事情
+ *    - 使用时间 3s 模拟安装过程，3s 后完成安装，结束进程
+ *
+ */
+
+const emitter = new events.EventEmitter()
+const eventName = 'stateFinished'
+
+emitter.on(eventName, (data) => {
+  console.log('userInfo ==>', data)
+  console.log('doSomething...')
+  setTimeout(() => {
+    console.log('Install Finished ~')
+  }, 3000)
 })
+
+function execCommand(statements, eventName) {
+  const result = {}
+  let state
+  const opState = () => {
+    state = statements.shift()
+    process.stdout.write(state.desc)
+  }
+  opState()
+  process.stdin.on('data', (chunk) => {
+    if (chunk !== null) {
+      result[state.key] = chunk.toString().trim() // chunk 默认是 16 进制，toString 转成字符，trim 是去掉 \r\n
+      if (statements.length) {
+        opState()
+      } else {
+        process.stdin.pause() // 暂停，可以用 resume() 恢复
+        emitter.emit(eventName, result) // 通知读完了
+      }
+    }
+  })
+}
+
+const statements = [
+  { key: 'name', desc: '你的名字：' },
+  { key: 'age', desc: '你的年龄：' },
+  { key: 'birth', desc: '你的生日：' },
+]
+
+execCommand(statements, eventName)
