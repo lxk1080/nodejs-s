@@ -1,6 +1,6 @@
 
 /**
- * 1、文件系统（File System），需要使用核心模块 fs
+ * 说明：文件系统（File System），需要使用核心模块 fs
  *    - nodejs 中所有的方法都有两种，异步和同步，不带 Sync 的为异步方法，后面带 Sync 的是同步方法
  *
  */
@@ -8,7 +8,7 @@
 const fs = require('fs');
 
 /**
- * 2、文件的同步写入
+ * 1、文件的同步写入
  *
  *    - 1. 打开文件
  *      - fs.openSync(path[, flags[, mode]])
@@ -37,7 +37,7 @@ const fs = require('fs');
 // fs.closeSync(fd); // 关闭，本地环境测试时，运行完毕就自动关闭了，但是服务器是不会关闭的，会一直存在于内存中，所以这句要写，虽然本地测试写不写都一样
 
 /**
- * 3、文件的异步写入
+ * 2、文件的异步写入
  *    - fs.open(path[, flags[, mode]], callback)
  *    - fs.write(fd, buffer[, offset[, length[, position]]], callback)
  *    - fs.close(fd[, callback])
@@ -65,9 +65,9 @@ const fs = require('fs');
 // });
 
 /**
- * 4、简单文件写入（比较常用，对 open、close 等各种 Api 进行了封装）
+ * 3、简单文件写入（比较常用，对 open、close 等各种 Api 进行了封装）
  *    - fs.writeFile(file, data[, options], callback)
- *      - flag：文件系统标志，a 代表追加，具体可查官方文档
+ *      - flag：文件系统标志，a 代表追加，writeFile 的 flag 默认为 w，具体可查官方文档
  *      - \n 换行
  *
  */
@@ -79,17 +79,31 @@ const fs = require('fs');
 // });
 
 /**
+ * 4、使用 appendFile 写入数据（添加的方式）
+ *    - appendFile 和 writeFile 的区别只在于默认的 flag 不一样
+ *      - appendFile 为 a
+ *      - writeFile 为 w
+ *      - 事实上，将两个方法的 flag 设置为相同的值，达到的效果是一样的
+ */
+
+// fs.appendFile('hello_4.txt', '123', function (err) {
+//   if (!err) {
+//     console.log('写入成功！');
+//   }
+// })
+
+/**
  * 5、流式文件写入（同步、异步、简单文件的写入，都不适合大文件的写入，性能较差，容易导致内存溢出）
  *    - fs.createWriteStream(path[, options])
  *      - 可以通过 open 和 close 事件来监听流的打开和关闭（由于打开和关闭只执行一次，所以用 once 来监听）
  *      - 使用 ws.end 结束流，用 ws.close 不能全部流入，可以这么理解：
  *        - 使用 ws.close，相当于把插在目标水池中的管子拔了，但是管子里还有水，还没完全流进去
- *        - 使用 ws.end，相当于把源水池的管子拔了，源水池的水已经输送完毕，剩下的在在管子里慢慢流过去
+ *        - 使用 ws.end，相当于把源水池的管子拔了，源水池的水已经输送完毕，剩下的再在管子里慢慢流过去
  *
  */
 
 // 理解：创建一个管子，插到目标池中
-const ws = fs.createWriteStream('hello_4.txt');
+const ws = fs.createWriteStream('hello_5.txt');
 
 ws.once('open', function () {
   console.log('流打开了！');

@@ -95,6 +95,7 @@ const fs = require('fs');
  * 8、监听文件
  *    - fs.watchFile(filename[, options], listener)
  *      - listener 中有两个参数，cur 和 prev，分别代表当前文件（修改后）和修改之前的 stats 对象
+ *      - 对应的方法时 fs.unwatchFile
  *
  */
 

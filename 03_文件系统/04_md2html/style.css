@@ -1,0 +1,12 @@
+
+/* 这个就相当于 md 的 > 的样式 */
+blockquote {
+  margin: 0;
+  background-color: #f8f8f8;
+  border-left: #ccc solid 2px;
+  padding: 10px 0 10px 15px;
+}
+
+p {
+  margin: 0;
+}

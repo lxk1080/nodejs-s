@@ -5,7 +5,9 @@
   "main": "test.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "npx nodemon ./04_http"
+    "server": "npx nodemon ./04_http",
+    "convert": "node ./03_文件系统/04_md2html/index.js",
+    "convert:test": "npm run convert ./test/md2html_test/test.md"
   },
   "repository": {
     "type": "git",
@@ -20,9 +22,11 @@
   "dependencies": {
     "art-template": "^4.13.2",
     "axios": "^0.27.2",
+    "browser-sync": "^2.27.10",
     "express": "^4.17.1",
     "express-art-template": "^1.0.1",
     "express-formidable": "^1.2.0",
+    "marked": "^4.0.18",
     "math": "0.0.3",
     "mongoose": "^6.0.12",
     "mysql": "^2.18.1"

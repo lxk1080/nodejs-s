@@ -12,3 +12,9 @@
   - 不占据 V8 堆内存大小的独立空间
   - 内存的使用由 node 控制，由 V8 的 GC 回收
   - 一般配合 Stream 流使用，充当数据缓冲区
+
+3、权限位
+
+![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
+
+4、
