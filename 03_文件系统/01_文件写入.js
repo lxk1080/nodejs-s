@@ -44,6 +44,9 @@ const fs = require('fs');
  *    - fs.close(fd[, callback])
  *
  *    > 在 nodejs 中，错误优先，只要一段程序可能会出现异常，那么它的回调函数的第一个参数必然是 err，只有 !err，程序才能继续向下运行
+ *    > 注意：open、write、close 这些 API 需要组合在一起使用，从 open 到 write 再到 close，整个过程为一次操作
+ *      - 像 writeFile、readFile 这些 API，是对 open、write、close 的封装，一次 API 的调用就为一次操作
+ *      - 所以有一个点需要注意：多次使用 writeFile 方法，默认会重新写入内容（多次操作），而使用 write 方法，则是累加内容（因为这一次操作还没做完）
  *
  */
 

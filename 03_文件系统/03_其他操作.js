@@ -56,9 +56,11 @@ const fs = require('fs');
 // });
 
 /**
- * 5、创建目录与删除目录
+ * 5、创建目录与删除目录（在未来的 node 版本，删除文件和文件夹将会共用同一个方法 fs.rm）
  *    - fs.mkdir(path[, options], callback)
+ *      - 默认只会创建一层目录，如果想创建多层目录，需要使用 recursive 属性（使用递归），否则会报错
  *    - fs.rmdir(path[, options], callback)
+ *      - 默认只会删除空目录，如果想删除非空目录，同样需要使用 recursive 属性（使用递归），否则会报错
  *
  */
 
@@ -66,8 +68,18 @@ const fs = require('fs');
 //   if (!err) console.log('创建完成！');
 // });
 
+// fs.mkdir('./a/b/custom', { recursive: true }, function (err) {
+//   if (err) return console.log(err);
+//   console.log('创建完成！');
+// });
+
 // fs.rmdir('./custom',  function (err) {
 //   if (!err) console.log('目录已删除！');
+// });
+
+// fs.rmdir('./a', { recursive: true }, function (err) {
+//   if (err) return console.log(err);
+//   console.log('目录已删除！');
 // });
 
 /**
@@ -95,11 +107,21 @@ const fs = require('fs');
  * 8、监听文件
  *    - fs.watchFile(filename[, options], listener)
  *      - listener 中有两个参数，cur 和 prev，分别代表当前文件（修改后）和修改之前的 stats 对象
- *      - 对应的方法时 fs.unwatchFile
+ *      - 对应的方法是 fs.unwatchFile
  *
  */
 
-fs.watchFile('./data/watchedFile.txt', { interval: 1000 }, function (cur, prev) {
-  console.log('修改前：', prev.size);
-  console.log('当前文件：', cur.size);
-});
+// fs.watchFile('./data/watchedFile.txt', { interval: 1000 }, function (cur, prev) {
+//   console.log('修改前：', prev.size);
+//   console.log('当前文件：', cur.size);
+// });
+
+/**
+ * 9、文件权限
+ *    - 可以用来判断文件是否存在，如果有操作权限，则证明存在，否则不存在（或者存在但是没权限，这个目前不清楚，需要去解析 err 信息）
+ */
+
+fs.access('./data/haha.txt', (err) => {
+  if (err) return console.log(err)
+  console.log('有操作权限')
+})
