@@ -43,8 +43,8 @@
 
 // console.log(arguments.callee + ''); // 模块的实际样子
 // console.log(exports === module.exports); // true
-// console.log(__filename); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化\module.js
-// console.log(__dirname); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs模块化
+// console.log(__filename); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs_模块化\module.js
+// console.log(__dirname); // C:\Users\lxk\Desktop\Nodejs-s\01_nodejs_模块化
 
 /**
  * 6、exports 和 module.exports，exports 是函数的参数，是一个变量，默认赋值为 module.exports，require 只接收 module.exports 的值，所以：
