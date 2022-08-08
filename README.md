@@ -31,15 +31,83 @@
 
 5、require 属性：`测试文件：/test/require_test/index.js`
   - resolve：返回模块文件的绝对路径
-  - extensions：可以做解析操作的后缀名及处理函数（已弃用）
+  - extensions：在 Node 中已有的扩展加载方式（已弃用）
   - main：表示 Node.js 进程启动时加载的入口脚本的 Module 对象
   - cache：缓存的模块
+  
+6、模块分类及加载流程
+  - 模块分类
+    - 核心模块：Node 提供的模块
+      - 核心模块部分在 Node 源代码的编译过程中，编译进了二进制执行文件
+      - 在 Node 进程启动时，部分核心模块就被直接加载进内存中，所以这部分核心模块引入时，文件定位和编译执行这两个步骤可以省略掉，<br>
+        并且在路径分析中优先判断，所以它的加载速度是最快的
+    - 文件模块：用户编写的模块
+      - 文件模块是在运行时动态加载，需要完整的路径分析、文件定位、编译执行过程，速度比核心模块慢
+  - 加载流程
+    - 优先从缓存加载
+      - Node 对引入过的模块都会进行缓存，以减少二次引入时的开销
+      - 使用路径做为索引进行缓存，缓存的是编译和执行之后的对象
+      - 不论是核心模块还是文件模块，require() 方法对相同模块的二次加载都一律采用缓存优先的方式，这是第一优先级的。<br>
+        不同之处在于核心模块的缓存检查先于文件模块的缓存检查
+    - 路径分析：依据模块标识符确认模块位置
+      - 核心模块（内置模块）
+        - 如何加载：在 Node 的源代码编译过程中已经编译为二进制代码
+        - 速度：核心模块的优先级仅次于缓存加载。但就加载过程而言，其速度最快
+      - 文件模块
+        - 如何加载：
+          - 以 `.` 、 `..` 和 `/` 开始的标识符，都被当做文件模块来处理
+          - 在分析文件模块时，require() 方法会将路径转为真实路径，并以真实路径作为索引，将编译执行后的结果存放到缓存中，以使二次加载时更快
+        - 速度：加载速度慢于核心模块
+      - 自定义模块
+        - 如何加载：在加载的过程中，Node 会逐个尝试模块路径 `module.paths` 中的路径，直到找到目标文件为止
+        - 速度：当前文件的路径越深，模块查找耗时会越多，自定义模块的加载速度是最慢的
+    - 文件定位：确定模块中具体的文件及文件类型（一个模块中可能含有多个文件）
+      - 文件扩展名分析，Node 会按 `.js`、`.json`、`.node` 的次序补足扩展名，依次尝试
+      - 目录分析和包
+        - require() 通过分析文件扩展名之后，可能没有查找到对应文件，但却得到一个目录，此时 Node 会将目录当做一个包来处理
+        - 首先，Node 在当前目录下查找 package.json，通过 JSON.parse() 解析出包描述对象，从中取出main属性指定的文件名进行定位。<br>
+          如果文件名缺少扩展名，将会进入扩展名分析的步骤
+        - 如果 main 属性指定的文件名错误，或者压根没有 package.json 文件，Node 会将 index 当做默认文件名，然后依次查找 index.js、index.json、index.node
+        - 如果在目录分析的过程中没有定位成功任何文件，则自定义模块进入下一个模块路径进行查找。<br>
+          如果模块路径数组都被遍历完毕，依然没有查找到目标文件，则会抛出查找失败的异常
+    - 编译执行：采用对应的方式完成文件的编译执行
+      - 这里说的模块编译都是指文件模块，即用户自己编写的模块
+      - 定位到具体的文件后，Node 会新建一个模块对象，然后根据路径载入文件并编译。对于不同的文件扩展名，其载入方法也有所不同（根据 require.extensions）
+        - `.js` 文件，通过 fs 模块 `同步` 读取文件后编译执行
+          - 在编译的过程中，Node 对获取的 JS 文件内容进行了头尾包装，<br>
+            在头部添加了 `(function (exports, require, module, __filename, __dirname) { `，<br>
+            在尾部添加了 `\n});`
+          - 通过 vm 原生模块的 runInThisContext() 方法执行，返回一个具体的 function 对象
+          - 将当前模块对象的 exports、require、module，以及在文件定位中得到的 __filename 和 __dirname 作为参数传递给这个 function() 执行
+          - 执行之后，模块的 exports 属性被返回给了调用方
+        - `.json` 文件，通过 fs 模块同步读取文件后，用 JSON.parse() 解析返回结果
+          - Node 利用 fs 模块同步读取 JSON 文件的内容之后，调用 JSON.parse() 方法得到对象，然后将它赋给模块对象的 exports，以供外部调用
+          - .json 文件的编译是 3 种编译方式中最简单的
+        - `.node` 文件，这是用 C/C++ 编写的扩展文件，通过 process.dlopen() 方法加载最后编译生成的文件
+          - .node 的模块文件并不需要编译，因为它是编写 C/C++ 模块之后编译生成的，所以只有加载和执行的过程，<br>
+            在执行的过程中，模块的 exports 对象与 .node 模块产生联系，然后返回给调用者
+          - dlopen() 方法在 Windows 和 *nix 平台下分别有不同的实现，通过 libuv 兼容层进行了封装
+          - C/C++ 模块给 Node 使用者带来的优势主要是执行效率方面的，劣势则是 C/C++ 模块的编写门槛比 JavaScript 高
+        - 其余扩展名文件，它们都被当做 .js 文件载入
 
-6、文件权限位
+7、模块加载源码分析，可以参考：[这个视频](https://www.bilibili.com/video/BV1sA41137qw?p=33&vd_source=35be3e17bbdc37153857a5a71c39543a)
+  - 以 `.js` 文件为例，加载过程关键步骤
+    ```js
+    - `require('./xxx);`
+    - `return mod.require(path);`
+    - `return Module._load(id, this, /* isMain */ false);`
+    - `module.load(filename);`
+    - `Module._extensions[extension](this, filename);`
+    - `module._compile(content, filename);`
+      - `const compiledWrapper = wrapSafe(filename, content, this);`
+      - `result = ReflectApply(compiledWrapper, thisValue, [exports, require, module, filename, dirname]);`
+    ```
+
+8、文件权限位
 
 ![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
 
-7、文件系统标志
+9、文件系统标志
   - `'a'` 打开文件进行追加。如果文件不存在，则创建该文件
   - `'ax'` 类似于 'a'，但如果路径存在则失败
   - `'a+'` 打开文件进行读取和追加。如果文件不存在，则创建该文件
