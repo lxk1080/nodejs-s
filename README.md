@@ -103,11 +103,13 @@
       - `result = ReflectApply(compiledWrapper, thisValue, [exports, require, module, filename, dirname]);`
     ```
 
-8、文件权限位
+8、模块加载模拟实现：`参考文件：/01_nodejs_模块化/01_myRequire.js`
+
+98、文件权限位
 
 ![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
 
-9、文件系统标志
+99、文件系统标志
   - `'a'` 打开文件进行追加。如果文件不存在，则创建该文件
   - `'ax'` 类似于 'a'，但如果路径存在则失败
   - `'a+'` 打开文件进行读取和追加。如果文件不存在，则创建该文件
