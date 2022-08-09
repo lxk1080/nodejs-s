@@ -105,6 +105,8 @@
 
 8、模块加载模拟实现：`参考文件：/01_nodejs_模块化/01_myRequire.js`
 
+9、EventEmitter 源码解析，可以参考：[这个视频](https://www.bilibili.com/video/BV1sA41137qw?p=39&vd_source=35be3e17bbdc37153857a5a71c39543a)
+
 98、文件权限位
 
 ![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
