@@ -107,6 +107,23 @@
 
 9、EventEmitter 源码解析，可以参考：[这个视频](https://www.bilibili.com/video/BV1sA41137qw?p=39&vd_source=35be3e17bbdc37153857a5a71c39543a)
 
+10、Node 中的事件循环 `测试文件：/test/EventLoop_test/index.js`
+  - 事件队列（排列顺序就是队列执行顺序）
+    - `timers`：执行 setTimeout 和 setInterval 回调
+    - `pending callbacks`：执行系统操作的回调，例如：tcp、udp
+    - `idle、prepare`：只在系统内部进行使用
+    - `poll`：执行与 I/O 相关的回调
+    - `check`：执行 setImmediate 的回调
+    - `close callback`：执行 close 事件的回调
+  - 事件循环
+    - 执行同步代码，将不同的任务添加至相应的队列
+    - 所有同步代码执行完后，会去执行满足条件的微任务（微任务有优先级）
+      - process.nextTick > Promise
+    - 所有微任务执行完后，会按照上面 `事件队列` 的顺序依次切换队列执行
+    - 注意：每执行完成一个宏任务后，会先去检查是否有微任务，如果有，则先去执行完所有的微任务，再去执行宏任务。原理同浏览器一样
+      - 再注意：在低版本的 Node 中，是每次做切换队列之前，去检查微任务的，现在最新版的是每执行完一个宏任务后去检查，和浏览器保持一样了，<br>
+        大概是从 12.x.x 版本开始改的
+
 98、文件权限位
 
 ![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
