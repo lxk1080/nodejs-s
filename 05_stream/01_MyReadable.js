@@ -59,7 +59,7 @@ const mr = new MyReadable(source)
 //   //   console.log(data.toString())
 //   // }
 //
-//   // 3. 过一会在读，等待 100 ms 后数据应该被全部 push 进缓冲区了，这样就可以一次性读取全部数据
+//   // 3. 过一会在读，等待 100 ms 后数据应该被全部 _read 进缓冲区了，这样就可以一次性读取全部数据
 //   setTimeout(() => {
 //     while ((data = mr.read()) !== null) {
 //       console.log(data.toString())
