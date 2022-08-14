@@ -107,7 +107,7 @@
 
 9、EventEmitter 源码解析，可以参考：[这个视频](https://www.bilibili.com/video/BV1sA41137qw?p=39&vd_source=35be3e17bbdc37153857a5a71c39543a)
 
-10、Node 中的事件循环 `测试文件：/test/EventLoop_test/index.js`
+10、Node 中的事件循环：`测试文件：/test/EventLoop_test/index.js`
   - 事件队列（排列顺序就是队列执行顺序）
     - `timers`：执行 setTimeout 和 setInterval 回调
     - `pending callbacks`：执行系统操作的回调，例如：tcp、udp
@@ -123,6 +123,68 @@
     - 注意：每执行完成一个宏任务后，会先去检查是否有微任务，如果有，则先去执行完所有的微任务，再去执行宏任务。原理同浏览器一样
       - 再注意：在低版本的 Node 中，是每次做切换队列之前，去检查微任务的，现在最新版的是每执行完一个宏任务后去检查，和浏览器保持一样了，<br>
         大概是从 12.x.x 版本开始改的
+  - 与浏览器中事件循环的不同点
+    - 任务队列数不同
+      - 浏览器中只有两个任务队列，微任务队列和宏任务队列
+      - 在 Node 中抛开微任务队列，还有其他的 6 个事件队列，且有执行顺序
+    - 微任务优先级不同
+      - 浏览器中，微任务事件队列，先进先出
+      - 在 Node 中微任务执行存在优先级
+  - 需要注意的地方，`测试文件：/test/EventLoop_test/01_timerAndCheck.js`
+    - setTimeout 与 setImmediate 的执行先后顺序是随机的
+
+      ```js
+        // 下面代码执行，有时先输出 timer，有时先输出 immerdiate
+        // 是因为 setTimeout 是有随机延时的，在进行事件循环时，也许其回调函数还没有加入到 timer 队列，所以先执行 setImmediate
+      
+        setTimeout(() => {
+          console.log('timer')
+        })
+    
+        setImmediate(() => {
+          console.log('immerdiate')
+        })
+      ```
+
+    - 与 I/O 操作一起使用时，setTimeout 与 setImmediate 的执行先后顺序是固定的
+    
+      ```js
+        // 下面代码执行，固定先输出 immerdiate，后输出 timer
+        // 是因为 I/O 操作放在 poll 队列，其回调执行完成后，将 setTimeout 回调加入 timer，将 setImmediate 回调加入 check
+        // poll 执行完成后，紧接着执行 check 队列，刚好可以执行刚加入的 immerdiate 回调，所以 immerdiate 每次都会先输出
+        // timer 的输出在下一次事件循环中
+      
+        const fs = require('fs')
+
+        fs.readFile('./index.js', () => {
+          setTimeout(() => {
+            console.log('timer')
+          })
+    
+          setImmediate(() => {
+            console.log('immerdiate')
+          })
+        })
+      ```
+
+11、Node 中的流操作 Stream
+  - 主要应用场景
+    - 文件操作系统
+    - 网络模块
+  - 流处理数据的优势
+    - 时间效率：流的分段处理可以同时操作多个数据 chunk。用户无需等待
+    - 空间效率：同一时间，流无需占据大内存空间。防止内存溢出
+    - 使用方便：流配合管理，扩展程序变得简单。在中间环节处理数据
+  - 流的分类
+    - Readable：可读流，实现数据的读取
+    - Writeable：可写流，实现数据的写操作
+    - Duplux：双工流，既可读又可写
+    - Transform：转换流，可读可写，还能实现数据转换
+  - 流的特点
+    - 以上的四个都是具体的抽象，也就是类，使用需要自行实现抽象接口
+      - 一般情况下我们不需要直接使用，像 fs、http 这样的模块都有实现相应的接口
+    - 所有流都继承自 EventEmitter
+  - 自定义可读流：`参照文件：/05_stream/01_MyReadable.js`
 
 98、文件权限位
 
