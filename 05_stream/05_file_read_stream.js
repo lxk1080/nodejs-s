@@ -60,11 +60,14 @@ const rs = fs.createReadStream('./helper/test.txt', {
  *      - rs 结束了自己罪恶的一生
  *
  *      > rs 就是可读流，可读流就是 rs，受害者是一开始的数据，rs 丧心病狂将数据大卸八块，然后一口一口吃掉
+ *      > 如果 read(size) 方法中，size > highWaterMark
+ *        - readable 事件的触发将会变得难以预料，可读流向缓冲区存入数据的大小也会变得难以预料
+ *        - 侧面说明：贪心将导致不堪设想的后果
  *
  */
 
 rs.on('readable', () => {
-  console.log('data-ready-!!!')
+  console.log('data-ready-!!!', rs._readableState.length)
   let data = null
   while((data = rs.read(1)) !== null) {
     console.log(data.toString())
