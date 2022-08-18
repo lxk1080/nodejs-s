@@ -66,11 +66,38 @@ const rs = fs.createReadStream('./helper/test.txt', {
  *
  */
 
-rs.on('readable', () => {
-  console.log('data-ready-!!!', rs._readableState.length)
-  let data = null
-  while((data = rs.read(1)) !== null) {
-    console.log(data.toString())
-    console.log('------->', rs._readableState.length)
-  }
+// rs.on('readable', () => {
+//   console.log('data-ready-!!!', rs._readableState.length)
+//   let data = null
+//   while((data = rs.read(1)) !== null) {
+//     console.log(data.toString())
+//     console.log('------->', rs._readableState.length)
+//   }
+// })
+
+/**
+ * 3、一些常用事件 open、close、end、error
+ *    - error 可以通过改成一个不存在的文件名触发
+ */
+
+rs.on('error', () => {
+  console.log('文件读取出错了')
+})
+
+rs.on('open', (fd) => {
+  console.log('文件打开了 fd =', fd)
+})
+
+let chunks = []
+rs.on('data', (chunk) =>{
+  chunks.push(chunk)
+})
+
+rs.on('end', () => {
+  console.log(Buffer.concat(chunks).toString())
+  console.log('数据读取完毕了')
+})
+
+rs.on('close', () => {
+  console.log('文件关闭了')
 })
