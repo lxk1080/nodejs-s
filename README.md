@@ -205,6 +205,51 @@
 
 ![png](https://article.biliimg.com/bfs/article/abc30455c030a935bbd79955fdb881912d392c22.png)
 
+<table style="text-align: center">
+  <tr>
+    <th>权限位</th>
+    <th colspan="3">文件所有者</th>
+    <th colspan="3">文件所属组</th>
+    <th colspan="3">其他用户</th>
+  </tr>
+  <tr>
+    <th>权限项</th>
+    <th>读</th>
+    <th>写</th>
+    <th>执行</th>
+    <th>读</th>
+    <th>写</th>
+    <th>执行</th>
+    <th>读</th>
+    <th>写</th>
+    <th>执行</th>
+  </tr>
+  <tr>
+    <td>字符表示</td>
+    <td>r</td>
+    <td>w</td>
+    <td>x</td>
+    <td>r</td>
+    <td>w</td>
+    <td>x</td>
+    <td>r</td>
+    <td>w</td>
+    <td>x</td>
+  </tr>
+  <tr>
+    <td>数字表示</td>
+    <td>4</td>
+    <td>2</td>
+    <td>1</td>
+    <td>4</td>
+    <td>2</td>
+    <td>1</td>
+    <td>4</td>
+    <td>2</td>
+    <td>1</td>
+  </tr>
+</table>
+
 99、文件系统标志
   - `'a'` 打开文件进行追加。如果文件不存在，则创建该文件
   - `'ax'` 类似于 'a'，但如果路径存在则失败
