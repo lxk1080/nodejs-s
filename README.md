@@ -108,21 +108,29 @@
 9、EventEmitter 源码解析，可以参考：[这个视频](https://www.bilibili.com/video/BV1sA41137qw?p=39&vd_source=35be3e17bbdc37153857a5a71c39543a)
 
 10、Node 中的事件循环：`测试文件：/test/EventLoop_test/index.js`
-  - 事件队列（排列顺序就是队列执行顺序）
+  - 官方指南：[event-loop-timers-and-nexttick](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/)
+  - 阶段概述（每个阶段都有一个 FIFO 队列来执行回调。以下排列顺序就是队列执行的先后顺序）
     - `timers`：执行 setTimeout 和 setInterval 回调
-    - `pending callbacks`：执行系统操作的回调，例如：tcp、udp
-    - `idle、prepare`：只在系统内部进行使用
-    - `poll`：执行与 I/O 相关的回调
+    - `pending callbacks`：执行在上一轮循环中被延迟的 I/O 回调 + 系统操作回调（如 TCP 错误类型）
+    - `idle, prepare`：只在系统内部进行使用
+    - `poll`：执行与 I/O 相关的回调（这个阶段最为复杂，可参考官方指南）
     - `check`：执行 setImmediate 的回调
-    - `close callback`：执行 close 事件的回调
-  - 事件循环
+    - `close callbacks`：执行 close 事件的回调
+  - 事件循环（简单理解）
     - 执行同步代码，将不同的任务添加至相应的队列
-    - 所有同步代码执行完后，会去执行满足条件的微任务（微任务有优先级）
+    - 所有同步代码执行完后，会去执行满足条件的微任务，微任务有优先级（事实上在 Node 里面没有微任务的概念，这里为了便于理解，就叫微任务）
       - process.nextTick > Promise
     - 所有微任务执行完后，会按照上面 `事件队列` 的顺序依次切换队列执行
     - 注意：每执行完成一个宏任务后，会先去检查是否有微任务，如果有，则先去执行完所有的微任务，再去执行宏任务。原理同浏览器一样
-      - 再注意：在低版本的 Node 中，是每次做切换队列之前，去检查微任务的，现在最新版的是每执行完一个宏任务后去检查，和浏览器保持一样了，<br>
+      - 顺便一提：在低版本的 Node 中，是每次做切换队列之前，去检查微任务的，现在最新版的是每执行完一个宏任务后去检查，和浏览器保持一样了，<br>
         大概是从 12.x.x 版本开始改的
+  - 关于 setImmediate
+    - setImmediate 是一个在事件循环的单独阶段运行的特殊计时器。它使用一个 libuv API 来安排回调在 轮询（poll） 阶段完成后执行
+    - setImmediate 相对于 setTimeout 的主要优势是：如果 setImmediate 是在 I/O 周期内被调度的，那它将会在其中任何的定时器之前执行
+  - 关于 process.nextTick
+    - 虽然 process.nextTick 是异步 API 的一部分，但是从技术上来讲，它并不是事件循环的一部分
+    - 执行时机：在每次同步代码执行之后，都会第一时间执行（也就是微任务的执行时机）
+      - 如果 process.nextTick 进行递归调用，将会阻塞事件循环
   - 与浏览器中事件循环的不同点
     - 任务队列数不同
       - 浏览器中只有两个任务队列，微任务队列和宏任务队列
@@ -131,7 +139,7 @@
       - 浏览器中，微任务事件队列，先进先出
       - 在 Node 中微任务执行存在优先级
   - 需要注意的地方，`测试文件：/test/EventLoop_test/01_timerAndCheck.js`
-    - setTimeout 与 setImmediate 的执行先后顺序是随机的
+    - setTimeout 与 setImmediate 的执行先后顺序是不确定的
 
       ```js
         // 下面代码执行，有时先输出 timer，有时先输出 immerdiate
