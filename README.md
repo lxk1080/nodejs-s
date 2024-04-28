@@ -266,6 +266,6 @@
   - `'wx+'` 类似于 'w+'，但如果路径存在则失败
 
 100、其他
-  - 在 Node 模块中，this 指向默认的 module.exports 对象
+  - 在 Node 模块中，this 指向默认的 module.exports 对象，但是在自执行的函数中输出 this，它的值等于 global
 
 <br><br><br>
